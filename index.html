@@ -2,56 +2,92 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Public Smart Garden (HiveMQ)</title>
+    <title>Smart Garden Remote</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #eef2f5; padding: 20px; }
-        .card { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 5px solid #0056b3; }
-        .status { padding: 5px 10px; border-radius: 5px; color: white; font-weight: bold; }
-        .connected { background: #28a745; } .disconnected { background: #dc3545; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .box { background: #f8f9fa; padding: 15px; border-radius: 8px; }
-        .val { font-size: 1.5rem; font-weight: bold; color: #0056b3; }
-        .btn { width: 100%; padding: 10px; margin-top: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-toggle { background: #007bff; color: white; }
-        .btn-mode { background: #6c757d; color: white; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        input { margin: 5px; padding: 5px; width: 90%; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; background: #f4f6f9; padding: 20px; margin: 0; }
+        .card { background: white; max-width: 400px; margin: 20px auto; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border-top: 6px solid #0056b3; }
+        h2 { margin-top: 0; color: #333; }
+        
+        /* Status Bar */
+        .status-bar { padding: 8px 15px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; color: white; margin-bottom: 20px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s; }
+        .connected { background: #28a745; } 
+        .disconnected { background: #dc3545; }
+        .connecting { background: #ffc107; color: #333; }
+
+        /* Grid Layout */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 25px 0; }
+        .box { background: #f8f9fa; padding: 15px; border-radius: 12px; position: relative; }
+        .box-label { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .val-container { margin-top: 5px; }
+        .val { font-size: 1.8rem; font-weight: 800; color: #0056b3; }
+        .unit { font-size: 1rem; color: #888; font-weight: normal; margin-left: 2px; }
+
+        /* Buttons */
+        .btn { width: 100%; padding: 15px; margin-top: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 1rem; text-transform: uppercase; transition: transform 0.1s, opacity 0.2s; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; background: #ccc !important; }
+        .btn-toggle { background: #007bff; }
+        .btn-mode { background: #6c757d; }
+
+        /* Mode Indicator */
+        .mode-indicator { font-weight: bold; color: #333; background: #e9ecef; padding: 5px 15px; border-radius: 15px; font-size: 0.9rem; }
+
+        /* Inputs */
+        input { width: calc(100% - 22px); padding: 12px 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; outline: none; transition: border 0.3s; }
+        input:focus { border-color: #0056b3; background: white; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Smart Garden Remote</h2>
-        <div id="connectionStatus" class="status disconnected">Offline</div>
+        <div id="connectionStatus" class="status-bar disconnected">Offline</div>
         
-        <!-- Form nhập thông tin đăng nhập -->
-        <div id="loginForm" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
-            <input type="text" id="mqttUser" placeholder="HiveMQ Username (Access Mgmt)">
-            <input type="password" id="mqttPass" placeholder="HiveMQ Password">
-            <button class="btn btn-toggle" onclick="connectMQTT()">Connect</button>
+        <!-- Form đăng nhập -->
+        <div id="loginForm">
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Enter HiveMQ Credentials</p>
+            <input type="text" id="mqttUser" placeholder="Username (Access Mgmt)">
+            <input type="password" id="mqttPass" placeholder="Password">
+            <button class="btn btn-toggle" onclick="connectMQTT()">Connect Securely</button>
         </div>
 
-        <div class="grid">
-            <div class="box">Temp<br><span id="temp" class="val">--</span>°C</div>
-            <div class="box">Humidity<br><span id="hum" class="val">--</span>%</div>
-            <div class="box">Soil<br><span id="soil" class="val">--</span>%</div>
-            <div class="box">Relay<br><span id="relay" class="val">OFF</span></div>
-        </div>
+        <!-- Giao diện điều khiển -->
+        <div id="dashboardUI" style="display:none;">
+            <div class="grid">
+                <div class="box">
+                    <div class="box-label">Temp</div>
+                    <div class="val-container"><span id="temp" class="val">--</span><span class="unit">°C</span></div>
+                </div>
+                <div class="box">
+                    <div class="box-label">Humidity</div>
+                    <div class="val-container"><span id="hum" class="val">--</span><span class="unit">%</span></div>
+                </div>
+                <div class="box">
+                    <div class="box-label">Soil</div>
+                    <div class="val-container"><span id="soil" class="val">--</span><span class="unit">%</span></div>
+                </div>
+                <div class="box">
+                    <div class="box-label">Pump</div>
+                    <div class="val-container"><span id="relay" class="val" style="color:#dc3545">OFF</span></div>
+                </div>
+            </div>
 
-        <div style="margin-bottom: 10px;">
-            Current Mode: <span id="modeVal" style="font-weight:bold;">--</span>
-        </div>
+            <div style="margin-bottom: 20px;">
+                <span class="mode-indicator">Mode: <span id="modeVal">--</span></span>
+            </div>
 
-        <button id="btnMode" class="btn btn-mode" onclick="switchMode()" disabled>Switch Mode</button>
-        <button id="btnRelay" class="btn btn-toggle" onclick="toggleRelay()" disabled>Toggle Pump</button>
+            <button id="btnMode" class="btn btn-mode" onclick="switchMode()" disabled>Switch Mode</button>
+            <button id="btnRelay" class="btn btn-toggle" onclick="toggleRelay()" disabled>Toggle Pump</button>
+        </div>
     </div>
 
 <script>
-    // --- CONFIGURATION ---
-    // URL từ ảnh của bạn
+    // --- CẤU HÌNH (Khớp với STAmode.c) ---
     const BROKER = "81f38e24654b4ee58fcd5ea11d164817.s1.eu.hivemq.cloud";
-    const PORT = 8884; // Cổng WebSocket Secure (WSS)
+    const PORT = 8884; // WSS Port
+    
+    // Đã cập nhật Topic chính xác theo ESP32
     const TOPIC_DATA = "smartgarden/device/001/telemetry";
     const TOPIC_CMD  = "smartgarden/device/001/cmd";
     
@@ -60,41 +96,49 @@
     let currentMode = 0; 
 
     function onConnect() {
-        console.log("Connected to HiveMQ Cloud");
+        console.log("Connected to Broker");
         document.getElementById("connectionStatus").innerText = "Online (TLS)";
-        document.getElementById("connectionStatus").className = "status connected";
-        document.getElementById("loginForm").style.display = "none"; // Ẩn form login
+        document.getElementById("connectionStatus").className = "status-bar connected";
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("dashboardUI").style.display = "block";
+        
+        console.log("Subscribing to: " + TOPIC_DATA);
         client.subscribe(TOPIC_DATA);
     }
 
     function onConnectionLost(responseObject) {
         if (responseObject.errorCode !== 0) {
             console.log("Connection Lost: " + responseObject.errorMessage);
-            document.getElementById("connectionStatus").innerText = "Offline";
-            document.getElementById("connectionStatus").className = "status disconnected";
-            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("connectionStatus").innerText = "Disconnected";
+            document.getElementById("connectionStatus").className = "status-bar disconnected";
         }
     }
 
     function onMessageArrived(message) {
-        console.log("Data: " + message.payloadString);
+        console.log("Data received: " + message.payloadString);
         try {
             const data = JSON.parse(message.payloadString);
+            
+            // Cập nhật giao diện an toàn hơn
             document.getElementById("temp").innerText = data.temp.toFixed(1);
             document.getElementById("hum").innerText = data.hum.toFixed(1);
             document.getElementById("soil").innerText = data.soil;
             
             currentRelay = (data.relay === 1);
-            document.getElementById("relay").innerText = currentRelay ? "ON" : "OFF";
-            document.getElementById("relay").style.color = currentRelay ? "#28a745" : "#dc3545";
+            const rEl = document.getElementById("relay");
+            rEl.innerText = currentRelay ? "ON" : "OFF";
+            rEl.style.color = currentRelay ? "#28a745" : "#dc3545";
 
             currentMode = data.mode;
             document.getElementById("modeVal").innerText = (currentMode === 1) ? "MANUAL" : "AUTO";
             
+            // Mở khóa nút bấm
             document.getElementById("btnRelay").disabled = (currentMode === 0);
             document.getElementById("btnMode").disabled = false;
             document.getElementById("btnMode").innerText = (currentMode === 0) ? "Switch to Manual" : "Switch to Auto";
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error("Parsing error:", e); 
+        }
     }
 
     function sendCommand(cmd, val) {
@@ -102,6 +146,7 @@
         message = new Paho.MQTT.Message(payload);
         message.destinationName = TOPIC_CMD;
         client.send(message);
+        console.log("Sent CMD: " + payload);
     }
 
     function connectMQTT() {
@@ -111,6 +156,8 @@
         if(!user || !pass) { alert("Please enter Username and Password"); return; }
 
         document.getElementById("connectionStatus").innerText = "Connecting...";
+        document.getElementById("connectionStatus").className = "status-bar connecting";
+        
         client = new Paho.MQTT.Client(BROKER, PORT, "web_client_" + new Date().getTime());
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
@@ -121,14 +168,14 @@
                 console.log(e); 
                 alert("Connection Failed: " + e.errorMessage); 
                 document.getElementById("connectionStatus").innerText = "Failed";
+                document.getElementById("connectionStatus").className = "status-bar disconnected";
             },
-            useSSL: true, // BẮT BUỘC CHO HIVEMQ CLOUD
+            useSSL: true,
             userName: user,
             password: pass
         });
     }
 
-    // --- UI ACTIONS ---
     function toggleRelay() { if (currentMode === 0) return; sendCommand("setRelay", !currentRelay); }
     function switchMode() { const newMode = (currentMode === 0) ? "manual" : "auto"; sendCommand("setMode", newMode); }
 </script>
