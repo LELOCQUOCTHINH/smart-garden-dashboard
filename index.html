@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Public Smart Garden (HiveMQ)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #eef2f5; padding: 20px; }
+        .card { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 5px solid #0056b3; }
+        .status { padding: 5px 10px; border-radius: 5px; color: white; font-weight: bold; }
+        .connected { background: #28a745; } .disconnected { background: #dc3545; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .box { background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        .val { font-size: 1.5rem; font-weight: bold; color: #0056b3; }
+        .btn { width: 100%; padding: 10px; margin-top: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-toggle { background: #007bff; color: white; }
+        .btn-mode { background: #6c757d; color: white; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        input { margin: 5px; padding: 5px; width: 90%; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Smart Garden Remote</h2>
+        <div id="connectionStatus" class="status disconnected">Offline</div>
+        
+        <!-- Form nhập thông tin đăng nhập -->
+        <div id="loginForm" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+            <input type="text" id="mqttUser" placeholder="HiveMQ Username (Access Mgmt)">
+            <input type="password" id="mqttPass" placeholder="HiveMQ Password">
+            <button class="btn btn-toggle" onclick="connectMQTT()">Connect</button>
+        </div>
+
+        <div class="grid">
+            <div class="box">Temp<br><span id="temp" class="val">--</span>°C</div>
+            <div class="box">Humidity<br><span id="hum" class="val">--</span>%</div>
+            <div class="box">Soil<br><span id="soil" class="val">--</span>%</div>
+            <div class="box">Relay<br><span id="relay" class="val">OFF</span></div>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            Current Mode: <span id="modeVal" style="font-weight:bold;">--</span>
+        </div>
+
+        <button id="btnMode" class="btn btn-mode" onclick="switchMode()" disabled>Switch Mode</button>
+        <button id="btnRelay" class="btn btn-toggle" onclick="toggleRelay()" disabled>Toggle Pump</button>
+    </div>
+
+<script>
+    // --- CONFIGURATION ---
+    // URL từ ảnh của bạn
+    const BROKER = "81f38e24654b4ee58fcd5ea11d164817.s1.eu.hivemq.cloud";
+    const PORT = 8884; // Cổng WebSocket Secure (WSS)
+    const TOPIC_DATA = "smartgarden/device/001/telemetry";
+    const TOPIC_CMD  = "smartgarden/device/001/cmd";
+    
+    let client;
+    let currentRelay = false;
+    let currentMode = 0; 
+
+    function onConnect() {
+        console.log("Connected to HiveMQ Cloud");
+        document.getElementById("connectionStatus").innerText = "Online (TLS)";
+        document.getElementById("connectionStatus").className = "status connected";
+        document.getElementById("loginForm").style.display = "none"; // Ẩn form login
+        client.subscribe(TOPIC_DATA);
+    }
+
+    function onConnectionLost(responseObject) {
+        if (responseObject.errorCode !== 0) {
+            console.log("Connection Lost: " + responseObject.errorMessage);
+            document.getElementById("connectionStatus").innerText = "Offline";
+            document.getElementById("connectionStatus").className = "status disconnected";
+            document.getElementById("loginForm").style.display = "block";
+        }
+    }
+
+    function onMessageArrived(message) {
+        console.log("Data: " + message.payloadString);
+        try {
+            const data = JSON.parse(message.payloadString);
+            document.getElementById("temp").innerText = data.temp.toFixed(1);
+            document.getElementById("hum").innerText = data.hum.toFixed(1);
+            document.getElementById("soil").innerText = data.soil;
+            
+            currentRelay = (data.relay === 1);
+            document.getElementById("relay").innerText = currentRelay ? "ON" : "OFF";
+            document.getElementById("relay").style.color = currentRelay ? "#28a745" : "#dc3545";
+
+            currentMode = data.mode;
+            document.getElementById("modeVal").innerText = (currentMode === 1) ? "MANUAL" : "AUTO";
+            
+            document.getElementById("btnRelay").disabled = (currentMode === 0);
+            document.getElementById("btnMode").disabled = false;
+            document.getElementById("btnMode").innerText = (currentMode === 0) ? "Switch to Manual" : "Switch to Auto";
+        } catch (e) { console.error(e); }
+    }
+
+    function sendCommand(cmd, val) {
+        const payload = JSON.stringify({ "command": cmd, "value": val });
+        message = new Paho.MQTT.Message(payload);
+        message.destinationName = TOPIC_CMD;
+        client.send(message);
+    }
+
+    function connectMQTT() {
+        const user = document.getElementById("mqttUser").value;
+        const pass = document.getElementById("mqttPass").value;
+
+        if(!user || !pass) { alert("Please enter Username and Password"); return; }
+
+        document.getElementById("connectionStatus").innerText = "Connecting...";
+        client = new Paho.MQTT.Client(BROKER, PORT, "web_client_" + new Date().getTime());
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        client.connect({
+            onSuccess: onConnect,
+            onFailure: (e) => { 
+                console.log(e); 
+                alert("Connection Failed: " + e.errorMessage); 
+                document.getElementById("connectionStatus").innerText = "Failed";
+            },
+            useSSL: true, // BẮT BUỘC CHO HIVEMQ CLOUD
+            userName: user,
+            password: pass
+        });
+    }
+
+    // --- UI ACTIONS ---
+    function toggleRelay() { if (currentMode === 0) return; sendCommand("setRelay", !currentRelay); }
+    function switchMode() { const newMode = (currentMode === 0) ? "manual" : "auto"; sendCommand("setMode", newMode); }
+</script>
+</body>
+</html>
