@@ -13,8 +13,8 @@
     
     <style>
         :root {
-            --primary-color: #034ea2; /* Màu xanh BK */
-            --accent-color: #00b5e2;  /* Màu xanh sáng BK */
+            --primary-color: #034ea2;
+            --accent-color: #00b5e2;
             --bg-color: #f0f2f5;
             --text-color: #333;
             --card-bg: #ffffff;
@@ -35,26 +35,19 @@
             color: var(--text-color);
         }
 
-        /* --- HIDE BROWSER DEFAULT EYE ICON --- */
-        /* Ẩn con mắt mặc định của Edge/IE */
-        input[type='password']::-ms-reveal,
-        input[type='password']::-ms-clear {
-            display: none;
-        }
-        /* Ẩn các thành phần autofill xấu xí nếu có */
-        input[type='password']::-webkit-credentials-auto-fill-button {
-            visibility: hidden;
-        }
+        /* Hide Default Eye Icon */
+        input[type='password']::-ms-reveal, input[type='password']::-ms-clear { display: none; }
+        input[type='password']::-webkit-credentials-auto-fill-button { visibility: hidden; }
 
         .main-card {
             background: var(--card-bg);
             width: 100%;
-            max-width: 440px; /* Reverted to wider width */
+            max-width: 440px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
             position: relative;
-            min-height: 600px; /* Enforce height consistency */
+            min-height: 600px;
             display: flex;
             flex-direction: column;
         }
@@ -66,217 +59,114 @@
             text-align: center;
             color: white;
         }
+        .header img { width: 80px; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .header h1 { margin: 0; font-size: 1.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { margin: 5px 0 0; font-size: 0.95rem; opacity: 0.9; }
 
-        .header img {
-            width: 80px;
-            height: auto;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 1.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .header p {
-            margin: 5px 0 0;
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
-
-        /* CONNECTION BAR */
+        /* STATUS BAR */
         .status-bar {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: background 0.3s;
+            background: #333; color: white; text-align: center; padding: 8px;
+            font-size: 0.85rem; font-weight: 500; transition: background 0.3s;
         }
         .status-connected { background: var(--success); }
         .status-disconnected { background: var(--danger); }
         .status-connecting { background: var(--warning); color: #333; }
 
-        /* DASHBOARD CONTENT */
+        /* CONTENT */
         .content { padding: 25px; flex-grow: 1; }
 
-        /* SENSOR GRID */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
+        /* GRID */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .sensor-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            border: 1px solid #e9ecef;
-            transition: transform 0.2s;
+            background: #f8f9fa; padding: 15px; border-radius: 15px; text-align: center;
+            border: 1px solid #e9ecef; transition: transform 0.2s;
         }
         .sensor-box:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-
-        .sensor-label {
-            font-size: 0.85rem;
-            color: #666;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .sensor-val {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
+        .sensor-label { font-size: 0.85rem; color: #666; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .sensor-val { font-size: 1.6rem; font-weight: 700; color: var(--primary-color); }
         .unit { font-size: 0.9rem; color: #888; font-weight: 400; }
 
-        /* MODE BADGE */
+        /* MODE */
         .mode-container {
-            text-align: center;
-            margin-bottom: 25px;
-            padding: 15px;
-            background: #fafafa;
-            border-radius: 15px;
-            border: 1px dashed #ddd;
+            text-align: center; margin-bottom: 25px; padding: 15px;
+            background: #fafafa; border-radius: 15px; border: 1px dashed #ddd;
         }
-        
         .mode-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            color: white;
+            display: inline-block; padding: 8px 20px; border-radius: 50px;
+            font-weight: 700; font-size: 0.95rem; text-transform: uppercase; color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .mode-auto { background: linear-gradient(to right, #28a745, #218838); }
         .mode-manual { background: linear-gradient(to right, #ffc107, #e0a800); color: #333; }
 
-        /* CONTROLS */
+        /* BUTTONS */
         .btn {
-            width: 100%;
-            padding: 16px;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
+            width: 100%; padding: 16px; margin-bottom: 15px; border: none; border-radius: 12px;
+            font-size: 1.05rem; font-weight: 600; cursor: pointer; text-transform: uppercase;
+            transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex; justify-content: center; align-items: center; color: white;
         }
         .btn:active { transform: scale(0.98); }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
-
         .btn-mode { background: var(--primary-color); }
         .btn-toggle { background: #ff5722; }
+        .btn-settings { background: #6c757d; margin-top: 10px; }
 
-        /* LOGIN OVERLAY - UPDATED */
+        /* LOGIN OVERLAY */
         #loginOverlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.98);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            box-sizing: border-box;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98); z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 40px; box-sizing: border-box;
         }
-        
-        .login-container {
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-        }
-
-        /* Increased Size for Login Elements */
-        .login-container img {
-            width: 110px; /* Bigger Logo */
-            margin-bottom: 20px;
-        }
-
-        .login-container h3 {
-            margin: 0 0 10px 0;
-            color: var(--primary-color);
-            font-size: 1.8rem; /* Bigger Title */
-            font-weight: 700;
-        }
-
-        .login-container p {
-            color: #666;
-            margin: 0 0 30px 0;
-            font-size: 1rem;
-        }
-
-        .login-input-group {
-            position: relative;
-            width: 100%;
-            margin: 12px 0;
-        }
-
+        .login-container { width: 100%; max-width: 380px; text-align: center; }
+        .login-container img { width: 110px; margin-bottom: 20px; }
+        .login-container h3 { margin: 0 0 10px 0; color: var(--primary-color); font-size: 1.8rem; font-weight: 700; }
+        .login-container p { color: #666; margin: 0 0 30px 0; font-size: 1rem; }
+        .login-input-group { position: relative; width: 100%; margin: 12px 0; }
         .login-input {
-            width: 100%;
-            padding: 16px 15px;
-            padding-right: 45px; /* Chừa chỗ cho icon con mắt */
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1.1rem; /* Bigger Text */
-            outline: none;
-            transition: border 0.3s;
-            box-sizing: border-box;
-            background: #fff;
+            width: 100%; padding: 16px 15px; padding-right: 45px;
+            border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1.1rem;
+            outline: none; transition: border 0.3s; box-sizing: border-box; background: #fff;
         }
         .login-input:focus { border-color: var(--primary-color); }
-
-        /* Custom Password Toggle Eye (SVG based) */
         .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #888;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #888; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;
         }
         .toggle-password:hover { color: var(--primary-color); }
-        .toggle-password svg {
-            width: 22px;
-            height: 22px;
+        .toggle-password svg { width: 22px; height: 22px; }
+
+        /* SETTINGS MODAL */
+        #settingsModal {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 50; backdrop-filter: blur(3px);
+            align-items: center; justify-content: center;
         }
+        .settings-card {
+            background: white; width: 90%; max-width: 380px; border-radius: 16px; padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideUp 0.3s ease-out;
+        }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .settings-header h3 { margin: 0; color: var(--primary-color); font-size: 1.2rem; }
+        .close-btn { font-size: 1.5rem; cursor: pointer; color: #888; font-weight: bold; }
+        .setting-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
+        .setting-row:last-child { border-bottom: none; }
+        .setting-label { font-size: 0.9rem; font-weight: 600; flex: 1; cursor: pointer; }
+        .setting-inputs { display: flex; gap: 5px; width: 65%; }
+        .setting-input, .setting-select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
+        .setting-check { transform: scale(1.3); margin-right: 10px; cursor: pointer; }
+        .disabled-row { opacity: 0.5; pointer-events: none; }
 
         /* SPINNER */
         .spinner {
-            width: 18px; height: 18px;
-            border: 3px solid rgba(255,255,255,0.4);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-left: 10px;
-            display: none;
+            width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.4);
+            border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite;
+            margin-left: 10px; display: none;
         }
         .btn.loading .spinner { display: block; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     </style>
 </head>
@@ -286,39 +176,71 @@
         <!-- Login Screen -->
         <div id="loginOverlay">
             <div class="login-container">
-                <!-- Updated Logo Path -->
                 <img src="images/logoBK.png" alt="BK Logo">
                 <h3>IoT Authentication</h3>
                 <p>Enter HiveMQ Credentials to Access</p>
-                
                 <div class="login-input-group">
                     <input type="text" id="mqttUser" class="login-input" placeholder="Username">
                 </div>
-                
                 <div class="login-input-group">
                     <input type="password" id="mqttPass" class="login-input" placeholder="Password">
                     <span class="toggle-password" onclick="togglePasswordVisibility()">
-                        <!-- Eye Closed (Default) -->
-                        <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                        </svg>
-                        <!-- Eye Open (Visible) -->
-                        <svg id="eyeOpen" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                        <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                        <svg id="eyeOpen" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     </span>
                 </div>
-                
                 <button class="btn btn-mode" onclick="connectMQTT()" style="margin-top: 25px; padding: 18px; font-size: 1.1rem;">
                     Connect System <span id="loginSpinner" class="spinner"></span>
                 </button>
             </div>
         </div>
 
+        <!-- Settings Modal -->
+        <div id="settingsModal">
+            <div class="settings-card">
+                <div class="settings-header">
+                    <h3>Auto Mode Settings</h3>
+                    <span class="close-btn" onclick="toggleSettings()">&times;</span>
+                </div>
+                <p style="font-size:0.85rem; color:#666; margin-bottom:15px; font-style:italic;">Pump runs if <b>ALL</b> checked conditions are met.</p>
+                <div id="settingsLoader" style="text-align:center; display:none;"><span class="spinner" style="display:inline-block; border-color: #666; border-top-color: transparent;"></span> Loading...</div>
+                
+                <div id="settingsBody">
+                    <!-- Temp -->
+                    <div class="setting-row">
+                        <input type="checkbox" id="en_temp" class="setting-check" onchange="toggleRow('temp')">
+                        <span class="setting-label" onclick="document.getElementById('en_temp').click()">Temp (°C)</span>
+                        <div id="row_temp" class="setting-inputs">
+                            <select id="op_temp" class="setting-select"><option value="1">&gt;</option><option value="0">&lt;</option></select>
+                            <input type="number" id="val_temp" class="setting-input" step="0.1" value="30">
+                        </div>
+                    </div>
+                    <!-- Hum -->
+                    <div class="setting-row">
+                        <input type="checkbox" id="en_hum" class="setting-check" onchange="toggleRow('hum')">
+                        <span class="setting-label" onclick="document.getElementById('en_hum').click()">Humid (%)</span>
+                        <div id="row_hum" class="setting-inputs">
+                            <select id="op_hum" class="setting-select"><option value="1">&gt;</option><option value="0">&lt;</option></select>
+                            <input type="number" id="val_hum" class="setting-input" step="0.1" value="60">
+                        </div>
+                    </div>
+                    <!-- Soil -->
+                    <div class="setting-row">
+                        <input type="checkbox" id="en_soil" class="setting-check" checked onchange="toggleRow('soil')">
+                        <span class="setting-label" onclick="document.getElementById('en_soil').click()">Soil (%)</span>
+                        <div id="row_soil" class="setting-inputs">
+                            <select id="op_soil" class="setting-select"><option value="1">&gt;</option><option value="0">&lt;</option></select>
+                            <input type="number" id="val_soil" class="setting-input" step="1" value="30">
+                        </div>
+                    </div>
+    
+                    <button class="btn btn-mode" onclick="saveSettings()">Apply Rules</button>
+                </div>
+            </div>
+        </div>
+
         <!-- App Header -->
         <div class="header">
-            <!-- Updated Logo Path -->
             <img src="images/logoBK.png" alt="Logo">
             <h1>Smart Garden</h1>
             <p>Ho Chi Minh City University of Technology</p>
@@ -329,7 +251,6 @@
 
         <!-- Content -->
         <div class="content">
-            <!-- Sensor Data -->
             <div class="grid">
                 <div class="sensor-box">
                     <div class="sensor-label">Temperature</div>
@@ -349,19 +270,21 @@
                 </div>
             </div>
 
-            <!-- Mode Indicator -->
             <div class="mode-container">
                 <div style="font-size: 0.85rem; color: #777; margin-bottom: 8px;">CURRENT OPERATING MODE</div>
                 <span id="modeBadge" class="mode-badge mode-auto">AUTO MODE</span>
             </div>
 
-            <!-- Actions -->
             <button id="btnMode" class="btn btn-mode" onclick="switchMode()" disabled>
                 <span class="btn-text">Switch to Manual</span> <span class="spinner"></span>
             </button>
             
             <button id="btnRelay" class="btn btn-toggle" onclick="toggleRelay()" disabled>
                 <span class="btn-text">Toggle Pump</span> <span class="spinner"></span>
+            </button>
+
+            <button id="btnSettings" class="btn btn-settings" onclick="toggleSettings()" disabled>
+                <span class="btn-text">Auto Mode Settings</span>
             </button>
         </div>
     </div>
@@ -372,10 +295,11 @@
     const PORT = 8884; 
     const TOPIC_DATA = "smartgarden/device/001/telemetry";
     const TOPIC_CMD  = "smartgarden/device/001/cmd";
+    const TOPIC_CONF = "smartgarden/device/001/config"; /* NEW TOPIC */
 
     let client;
     let currentRelay = false;
-    let currentMode = 0; // 0: Auto, 1: Manual
+    let currentMode = 0; 
     let isProcessing = false;
 
     /* --- UI HELPERS --- */
@@ -383,23 +307,29 @@
         const passInput = document.getElementById("mqttPass");
         const eyeOpen = document.getElementById("eyeOpen");
         const eyeClosed = document.getElementById("eyeClosed");
-
         if (passInput.type === "password") {
-            passInput.type = "text";
-            eyeOpen.style.display = "block";
-            eyeClosed.style.display = "none";
+            passInput.type = "text"; eyeOpen.style.display = "block"; eyeClosed.style.display = "none";
         } else {
-            passInput.type = "password";
-            eyeOpen.style.display = "none";
-            eyeClosed.style.display = "block";
+            passInput.type = "password"; eyeOpen.style.display = "none"; eyeClosed.style.display = "block";
         }
+    }
+
+    function toggleSettings() {
+        const modal = document.getElementById('settingsModal');
+        modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function toggleRow(type) {
+        const chk = document.getElementById('en_' + type);
+        const div = document.getElementById('row_' + type);
+        if (chk.checked) div.classList.remove('disabled-row');
+        else div.classList.add('disabled-row');
     }
 
     /* --- MQTT LOGIC --- */
     function connectMQTT() {
         const user = document.getElementById("mqttUser").value;
         const pass = document.getElementById("mqttPass").value;
-        
         if(!user || !pass) return alert("Please enter both Username and Password!");
 
         const btn = document.querySelector("#loginOverlay .btn");
@@ -413,38 +343,25 @@
             onSuccess: onConnect,
             onFailure: (e) => {
                 btn.classList.remove("loading");
-                console.log(e);
-                
-                // Xử lý thông báo lỗi cụ thể hơn
                 let errorMsg = "Connection Failed!";
-                
-                // HiveMQ/Paho thường trả về code 8 cho lỗi auth hoặc connection refused chung
-                if (e.errorCode === 8 || e.errorMessage.includes("Not authorized") || e.errorMessage.includes("auth")) {
-                    errorMsg = "Authentication Failed! Please check Username or Password.";
-                } else if (e.errorCode === 7 || e.errorMessage.includes("AMQJSC0001E")) {
-                    errorMsg = "Network Error: Cannot connect to Broker. Check internet or firewall.";
-                } else {
-                    errorMsg += " (" + e.errorMessage + ")";
-                }
-                
+                if (e.errorCode === 8 || e.errorMessage.includes("Not authorized")) errorMsg = "Auth Failed! Check Username/Password.";
+                else if (e.errorCode === 7) errorMsg = "Network Error: Cannot reach Broker.";
                 alert(errorMsg);
             },
-            useSSL: true,
-            userName: user,
-            password: pass
+            useSSL: true, userName: user, password: pass
         });
     }
 
     function onConnect() {
-        console.log("Connected");
         document.getElementById("loginOverlay").style.display = "none";
         updateStatus("Connected (TLS)", "status-connected");
         client.subscribe(TOPIC_DATA);
+        /* UPDATE: Đăng ký topic config để cập nhật UI khi có thay đổi */
+        client.subscribe(TOPIC_CONF);
     }
 
     function onConnectionLost(res) {
         if (res.errorCode !== 0) {
-            console.log("Lost: " + res.errorMessage);
             updateStatus("Disconnected", "status-disconnected");
             document.getElementById("loginOverlay").style.display = "flex";
             document.querySelector("#loginOverlay .btn").classList.remove("loading");
@@ -453,56 +370,75 @@
 
     function updateStatus(msg, cls) {
         const el = document.getElementById("connStatus");
-        el.innerText = msg;
-        el.className = "status-bar " + cls;
+        el.innerText = msg; el.className = "status-bar " + cls;
     }
 
     function onMessageArrived(msg) {
         isProcessing = false;
-        setBtnLoading("btnMode", false);
-        setBtnLoading("btnRelay", false);
+        setBtnLoading("btnMode", false); setBtnLoading("btnRelay", false);
 
         try {
-            const data = JSON.parse(msg.payloadString);
+            const payload = msg.payloadString;
+            const data = JSON.parse(payload);
             
-            // Update Sensors
-            if(data.temperature !== undefined) document.getElementById("temp").innerText = data.temperature.toFixed(1);
-            if(data.humidity !== undefined) document.getElementById("hum").innerText = data.humidity.toFixed(1);
-            if(data.soil_moisture !== undefined) document.getElementById("soil").innerText = data.soil_moisture;
+            /* Xử lý Data Telemetry */
+            if (msg.destinationName.includes("telemetry")) {
+                if(data.temperature !== undefined) document.getElementById("temp").innerText = data.temperature.toFixed(1);
+                if(data.humidity !== undefined) document.getElementById("hum").innerText = data.humidity.toFixed(1);
+                if(data.soil_moisture !== undefined) document.getElementById("soil").innerText = data.soil_moisture;
 
-            // Update Relay
-            currentRelay = (data.relay === 1);
-            const rEl = document.getElementById("relay");
-            rEl.innerText = currentRelay ? "ON" : "OFF";
-            rEl.style.color = currentRelay ? "var(--success)" : "var(--danger)";
+                currentRelay = (data.relay === 1);
+                const rEl = document.getElementById("relay");
+                rEl.innerText = currentRelay ? "ON" : "OFF";
+                rEl.style.color = currentRelay ? "var(--success)" : "var(--danger)";
 
-            // Update Mode
-            currentMode = data.mode;
-            updateModeUI();
+                currentMode = data.mode;
+                updateModeUI();
+                
+                document.getElementById("btnSettings").disabled = false;
+            }
+            /* Xử lý Config Sync (Từ Topic Config) */
+            else if (msg.destinationName.includes("config")) {
+                console.log("Received Config Sync:", data);
+                updateSettingsUI(data);
+            }
 
         } catch(e) { console.error(e); }
+    }
+    
+    /* Hàm cập nhật UI Setting từ dữ liệu MQTT */
+    function updateSettingsUI(data) {
+        if (data.te !== undefined) document.getElementById('en_temp').checked = (data.te === 1);
+        if (data.tt !== undefined) document.getElementById('val_temp').value = data.tt;
+        if (data.to !== undefined) document.getElementById('op_temp').value = data.to;
+        toggleRow('temp');
+
+        if (data.he !== undefined) document.getElementById('en_hum').checked = (data.he === 1);
+        if (data.ht !== undefined) document.getElementById('val_hum').value = data.ht;
+        if (data.ho !== undefined) document.getElementById('op_hum').value = data.ho;
+        toggleRow('hum');
+
+        if (data.se !== undefined) document.getElementById('en_soil').checked = (data.se === 1);
+        if (data.st !== undefined) document.getElementById('val_soil').value = data.st;
+        if (data.so !== undefined) document.getElementById('op_soil').value = data.so;
+        toggleRow('soil');
     }
 
     function updateModeUI() {
         const badge = document.getElementById("modeBadge");
-        const btnMode = document.getElementById("btnMode");
         const btnRelay = document.getElementById("btnRelay");
-        const txtMode = btnMode.querySelector(".btn-text");
+        const txtMode = document.getElementById("btnMode").querySelector(".btn-text");
 
         if (currentMode === 1) { // MANUAL
-            badge.innerText = "MANUAL CONTROL";
-            badge.className = "mode-badge mode-manual";
+            badge.innerText = "MANUAL CONTROL"; badge.className = "mode-badge mode-manual";
             txtMode.innerText = "Switch to Automatic";
-            btnRelay.disabled = false; 
-            btnRelay.style.opacity = "1";
+            btnRelay.disabled = false; btnRelay.style.opacity = "1";
         } else { // AUTO
-            badge.innerText = "AUTO MODE";
-            badge.className = "mode-badge mode-auto";
+            badge.innerText = "AUTO MODE"; badge.className = "mode-badge mode-auto";
             txtMode.innerText = "Switch to Manual";
-            btnRelay.disabled = true; 
-            btnRelay.style.opacity = "0.6";
+            btnRelay.disabled = true; btnRelay.style.opacity = "0.6";
         }
-        btnMode.disabled = false;
+        document.getElementById("btnMode").disabled = false;
     }
 
     function sendCommand(cmd, val) {
@@ -512,29 +448,47 @@
         client.send(message);
     }
 
+    /* UPDATE: Sử dụng MQTT để gửi cấu hình (Thay vì HTTP) */
+    function saveSettings() {
+        const config = {
+            "te": document.getElementById('en_temp').checked ? 1 : 0,
+            "tt": parseFloat(document.getElementById('val_temp').value),
+            "to": parseInt(document.getElementById('op_temp').value),
+            
+            "he": document.getElementById('en_hum').checked ? 1 : 0,
+            "ht": parseFloat(document.getElementById('val_hum').value),
+            "ho": parseInt(document.getElementById('op_hum').value),
+            
+            "se": document.getElementById('en_soil').checked ? 1 : 0,
+            "st": parseInt(document.getElementById('val_soil').value),
+            "so": parseInt(document.getElementById('op_soil').value)
+        };
+        
+        // Gửi lệnh setConfig qua MQTT
+        sendCommand("setConfig", config);
+        
+        toggleSettings(); 
+        alert("Configuration Sent via MQTT! Waiting for sync...");
+    }
+
     /* --- ACTIONS --- */
     function switchMode() {
         if(isProcessing) return;
-        isProcessing = true;
-        setBtnLoading("btnMode", true);
-        
+        isProcessing = true; setBtnLoading("btnMode", true);
         const cmdVal = (currentMode === 0) ? "manual" : "auto";
         sendCommand("setMode", cmdVal);
     }
 
     function toggleRelay() {
         if(currentMode === 0 || isProcessing) return;
-        isProcessing = true;
-        setBtnLoading("btnRelay", true);
+        isProcessing = true; setBtnLoading("btnRelay", true);
         sendCommand("setRelay", !currentRelay);
     }
 
     function setBtnLoading(id, isLoading) {
         const btn = document.getElementById(id);
-        if(isLoading) btn.classList.add("loading");
-        else btn.classList.remove("loading");
+        if(isLoading) btn.classList.add("loading"); else btn.classList.remove("loading");
     }
-
 </script>
 </body>
 </html>
